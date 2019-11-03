@@ -13,7 +13,9 @@ Run main_GMM2nd.py     to regenerate Figure 6.
 Run main_GMM1st.py     to regenerate Figure 7 and 8.
 
 Reference:
+
     "Stability Analysis of Newton-MR Under Hessian Perturbations".
-Authors: Yang Liu, Fred Roosta. ArXiv:1909.06224
+    Authors: Yang Liu, Fred Roosta. ArXiv:1909.06224
+
     "Newton-MR: Newton’s Method Without Smoothness or Convexity".
-Authors: Fred Roosta, Yang Liu, Peng Xu, Michael W. Mahoney. ArXiv: 1810.00303
+    Authors: Fred Roosta, Yang Liu, Peng Xu, Michael W. Mahoney. ArXiv: 1810.00303
