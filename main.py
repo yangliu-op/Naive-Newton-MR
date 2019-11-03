@@ -1,8 +1,10 @@
 """
 Code for "Stability Analysis of Newton-MR Under Hessian Perturbations".
 Authors: Yang Liu, Fred Roosta. ArXiv:1909.06224
-One can play around with different methods here. If one want to recover figures 
-of the above paper...
+
+One can play around with different methods in main.py. 
+If one want to regenerate figures of the above paper...
+
 Run main_Fraction.py   to regenerate Figure 1.
 Run main_Softmax2nd.py to regenerate Figure 2.
 Run main_Softmax1st.py to regenerate Figure 3.
