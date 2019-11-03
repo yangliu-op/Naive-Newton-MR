@@ -2,4 +2,4 @@
 
 Download the MNIST dataset into MNIST folder, via [http://yann.lecun.com/exdb/mnist/](http://yann.lecun.com/exdb/mnist/).
 
-Download the cifar10 dataset into cifar10 folder, via [https://www.cs.toronto.edu/~kriz/cifar.html](https://www.cs.toronto.edu/~kriz/cifar.html).
+Download the cifar-10 dataset into cifar-10-python folder, via [https://www.cs.toronto.edu/~kriz/cifar.html](https://www.cs.toronto.edu/~kriz/cifar.html).
