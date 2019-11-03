@@ -1,9 +1,15 @@
 # Newton-MR
-Newton-MR is a second-order Newton-type optimisation algorithms. This is the python codes for paper [Stability Analysis of Newton-MR Under Hessian Perturbations](https://arxiv.org/abs/1909.06224).
+Newton-MR is a second-order Newton-type optimisation algorithms. This python codes is for the paper [Stability Analysis of Newton-MR Under Hessian Perturbations](https://arxiv.org/abs/1909.06224).
 
     Authors: 
-        Yang Liu, contact: yang.liu2(AT)uq.edu.au
-        Fred Roosta, contact: fred.roosta(AT)uq.edu.au
+        Yang Liu, 
+        School of Mathematics and Physics, the University of Queensland, Australia.
+        contact: yang.liu2(AT)uq.edu.au
+        
+        Fred Roosta,  
+        School of Mathematics and Physics, the University of Queensland, Australia, 
+            and International Computer Science Institute, Berkeley, USA.
+        contact: fred.roosta(AT)uq.edu.au
 
 All optimisation algorithms can be found at optim_algo.py
 
