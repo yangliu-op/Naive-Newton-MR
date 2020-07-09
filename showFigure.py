@@ -20,14 +20,17 @@ def showFigure(methods_all, record_all, prob, mypath, plotAll=False):
         Iteration vs. Step Size
     """
     fsize = 12
-    myplt = plt.loglog
+#    myplt = plt.loglog
+#    myplt = plt.semilogx
+#    myplt = plt.plot
         
     colors = ['k', 'm', 'g', 'y', 'r', 'b', 'c']
-    linestyles = ['-', '-.', '--']
+    linestyles = ['-', '-.', '--', '-.-']
     
     figsz = (6,4)
     mydpi = 200
     
+    myplt = plt.semilogx
     if prob != 'fraction':
         fig1 = plt.figure(figsize=figsz)
         for i in range(len(methods_all)):
@@ -39,7 +42,7 @@ def showFigure(methods_all, record_all, prob, mypath, plotAll=False):
         plt.legend()
         fig1.savefig(os.path.join(mypath, 'F'), dpi=mydpi)
         
-        
+        myplt = plt.loglog
         fig2 = plt.figure(figsize=figsz)
         for i in range(len(methods_all)):
             record = record_all[i]
@@ -48,8 +51,9 @@ def showFigure(methods_all, record_all, prob, mypath, plotAll=False):
         plt.xlabel('Oracle calls', fontsize=fsize)
         plt.ylabel('Gradient norm', fontsize=fsize)
         plt.legend()
-        fig2.savefig(os.path.join(mypath, 'Gradient norm'), dpi=mydpi)
+        fig2.savefig(os.path.join(mypath, 'GradientNorm'), dpi=mydpi)
         
+        myplt = plt.semilogx
         fig3 = plt.figure(figsize=figsz)
         if prob == 'gmm':        
             for i in range(len(methods_all)):
@@ -75,7 +79,10 @@ def showFigure(methods_all, record_all, prob, mypath, plotAll=False):
         for i in range(len(methods_all)):
             record = record_all[i]
             loop_i = int((i+1)/7)
-            myplt(range(1,len(record[:,0])+1), record[:,0], color=colors[i-7*loop_i], linestyle=linestyles[loop_i], label = methods_all[i])
+            if i == 0:
+                myplt(range(1,len(record[:,0])+1), record[:,0], color=colors[i-7*loop_i], linestyle=linestyles[loop_i], label = methods_all[i])
+            else:
+                myplt(range(1,len(record[:,0])+1), record[:,0], color=colors[i-7*loop_i], linestyle=linestyles[loop_i], marker = '.', label = methods_all[i])
         plt.xlabel('Iteration', fontsize=fsize)
         plt.ylabel('F', fontsize=fsize)
         plt.legend()
@@ -85,7 +92,10 @@ def showFigure(methods_all, record_all, prob, mypath, plotAll=False):
         for i in range(len(methods_all)):
             record = record_all[i]
             loop_i = int((i+1)/7)
-            myplt(range(1,len(record[:,1])+1), record[:,1], color=colors[i-7*loop_i], linestyle=linestyles[loop_i], label = methods_all[i])
+            if i == 0:
+                myplt(range(1,len(record[:,1])+1), record[:,1], color=colors[i-7*loop_i], linestyle=linestyles[loop_i], label = methods_all[i])
+            else:
+                myplt(range(1,len(record[:,1])+1), record[:,1], color=colors[i-7*loop_i], linestyle=linestyles[loop_i], marker = '.', label = methods_all[i])
         plt.xlabel('Iteration', fontsize=fsize)
         plt.ylabel('Gradient norm', fontsize=fsize)
         plt.legend()
@@ -97,9 +107,12 @@ def showFigure(methods_all, record_all, prob, mypath, plotAll=False):
             loop_i = int((i+1)/7)
             if record.shape[1] < 5:
                 raise ValueError('First Order methods do not have stepsize!')
-            myplt(range(1,len(record[:,4])+1), record[:,4], color=colors[i-7*loop_i], linestyle=linestyles[loop_i], label = methods_all[i])
+            if i == 0:
+                myplt(range(1,len(record[:,4])+1), record[:,4], color=colors[i-7*loop_i], linestyle=linestyles[loop_i], label = methods_all[i])
+            else:
+                myplt(range(1,len(record[:,4])+1), record[:,4], color=colors[i-7*loop_i], linestyle=linestyles[loop_i], marker = '.', label = methods_all[i])
         plt.xlabel('Iteration', fontsize=fsize)
-        plt.ylabel('Step Size', fontsize=fsize)
+        plt.ylabel('Step size', fontsize=fsize)
         plt.legend()
         fig6.savefig(os.path.join(mypath, 'Iteration_alpha'), dpi=mydpi)
         
@@ -175,7 +188,10 @@ def showFigure_CGvsMR(methods_all, record_all, mypath):
 def main():
     methods_all = []
     record_all = []
-    for method in os.listdir('showFig'): #only contains txt files
+    soft = ['ssNewton_MR_5%.txt', 'Momentum.txt', 'Adagrad.txt', 'Adadelta.txt', 
+            'RMSprop.txt', 'Adam.txt', 'SGD.txt']
+    for method in soft: #only contains txt files
+#    for method in os.listdir('showFig'): #only contains txt files
         methods_all.append(method.rsplit('.', 1)[0])
         record = np.loadtxt(open('showFig/'+method,"rb"),delimiter=",",skiprows=0)
         record_all.append(record)
@@ -193,7 +209,8 @@ def main():
     """
     regenerate/seperate MR vs. CG plot via txt history matrix in showFig folder.
     """
-    showFigure_CGvsMR(methods_all, record_all, mypath)
+#    showFigure_CGvsMR(methods_all, record_all, mypath)
+    showFigure(methods_all, record_all, 'notfraction', mypath, plotAll=False)
     
     
     

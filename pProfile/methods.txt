@@ -1,6 +1,7 @@
-Newton_MR
-ssNewton_MR_10%
 ssNewton_MR_5%
-ssNewton_MR_1%
-L_BFGS
-Gauss_Newton
+Momentum
+Adagrad
+Adadelta
+RMSprop
+Adam
+SGD

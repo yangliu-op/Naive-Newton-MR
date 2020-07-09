@@ -2,8 +2,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-def pProfile(methods, Matrix, length=300, arg='log10', cut=None, 
-             ylabel='Performance Profile', ylim=None):
+def pProfile(methods, Matrix, length=300, arg='log10', cut=None, ylim=None):
     """
     A performance profile plot is the CDF of the performance of every 
     algorithms. Put your pProfile record (objVal/gradNorm/err) matrix to 
@@ -40,16 +39,15 @@ les for benchmarking
     if arg is None:
         x = np.linspace(1, x_high, length)
         myplt = plt.plot
-        plt.xlabel('lambda')
     if arg is 'log2':
         x = np.logspace(0, np.log2(x_high), length)
         myplt = plt.semilogx
-        plt.xlabel('log2(lambda)')
     if arg is 'log10':
         x = np.logspace(0, np.log10(x_high), length)
         myplt = plt.semilogx
-        plt.xlabel('log(lambda)')
     n, d = Matrix.shape
+    plt.xlabel('$\lambda$')
+    plt.ylabel('')
     if cut != None:
         x = x[:cut]
         length = cut
@@ -70,7 +68,6 @@ les for benchmarking
         myplt(x, yi, color=colors[i-7*loop_i], linestyle=linestyles[loop_i], 
               label = myMethod)
         
-    plt.ylabel(ylabel)
     plt.legend()
     
     
@@ -89,15 +86,15 @@ def main():
     length = 300
     
     fig1 = plt.figure(figsize=figsz)    
-    pProfile(methods, F, length, arg='log10',cut=80) #80 150
+    pProfile(methods, F, length, arg='log10',cut=210) #80 150
     fig1.savefig(os.path.join(mypath, 'F'), dpi=mydpi)
     
     fig2 = plt.figure(figsize=figsz)    
-    pProfile(methods, G, length, arg='log10', ylabel='GradientNorm')
+    pProfile(methods, G, length, arg='log10')
     fig2.savefig(os.path.join(mypath, 'GradientNorm'), dpi=mydpi)
     
     fig3 = plt.figure(figsize=figsz)    
-    pProfile(methods, Err,length, arg='log10',cut=40, ylabel='Error') #40 80
+    pProfile(methods, Err,length, arg='log10',cut=80) #40 80
     fig3.savefig(os.path.join(mypath, 'Error'), dpi=mydpi)
     
 if __name__ == '__main__':

@@ -17,7 +17,6 @@ class algPara():
         
 #initialize methods
 data = [
-#        'mnist',
         'cifar10',
         ]
 
@@ -51,7 +50,7 @@ x0Type = [
 
 #initialize parameters
 algPara.mainLoopMaxItrs = 1E5 #Set mainloop stops with Maximum Iterations
-algPara.funcEvalMax = 100 #Set mainloop stops with Maximum Function Evaluations
+algPara.funcEvalMax = 1E3 #Set mainloop stops with Maximum Function Evaluations
 algPara.innerSolverMaxItrs = 200 
 algPara.lineSearchMaxItrs = 50
 algPara.gradTol = 1e-10 #If norm(g)<gradTol, minFunc loop breaks
@@ -59,24 +58,27 @@ algPara.innerSolverTol = 0.01 #Inexactness of inner solver
 algPara.beta = 1E-4 #Line search para
 algPara.beta2 = 0.4 #Wolfe's condition for L-BFGS
 algPara.show = True 
-
-if data[0] == 'mnist':
-    learningRate.Momentum = 1E-5
-    learningRate.Adagrad = 1E-4
-    learningRate.Adadelta = 1E-1
-    learningRate.RMSprop = 1E-5
-    learningRate.Adam = 1E-5
-    learningRate.SGD = 1E-5
+#algPara.show = False # print value in every iteration
     
-if data[0] == 'cifar10':
-    learningRate.Momentum = 1E-8 #1E-7
-    learningRate.Adagrad = 1E-6
-    learningRate.Adadelta = 1E-4
-    learningRate.RMSprop = 1E-7 #1E-6
-    learningRate.Adam = 1E-8 #1E-7
-    learningRate.SGD = 1E-7
-
+#####     full gradient ###### suggest algPara.funcEvalMax = 1E4
+#learningRate.Momentum = 5.976873506562755e-07
+#learningRate.Adagrad = 6.1484967152219825e-06
+#learningRate.Adadelta = 63.214676616915423E-4
+#learningRate.RMSprop = 1.721313398398448e-06
+#learningRate.Adam = 2.0549880802622692e-07
+#learningRate.SGD = 3.4531770481261144e-07
+#batchsize = 1 # proportion of mini-batch size
+    
+    
+#####     0.05 batch ###### suggest algPara.funcEvalMax = 1E3
+learningRate.Momentum = 2.966741304347826e-07
+learningRate.Adagrad = 5.356066237949585e-06
+learningRate.Adadelta = 0.00272575
+learningRate.RMSprop = 6.738569565217392e-07
+learningRate.Adam = 2.069303607054962e-07
+learningRate.SGD = 3.219708160377358e-07
 batchsize = 0.05 # proportion of mini-batch size
+
 ############################For 1 run plot#####################################
 # comment off HProp if you don't want subsampling
 HProp_all = [0.05] # \leq 3 inputs

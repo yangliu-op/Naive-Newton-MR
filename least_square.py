@@ -5,7 +5,8 @@ from logistic import logistic
 from regularizer import regConvex, regNonconvex
 from scipy.sparse import spdiags, csr_matrix
 
-def least_square(X, y, w, HProp=None, arg=None, reg=None, act='logistic'):
+def least_square(X, y, w, HProp=None, arg=None, reg=None, act='logistic', 
+                 batchsize=None):
     """
     Least square problem sum(phi(Xw) - y)^2, where phi is logistic function.
     INPUT:
@@ -16,6 +17,7 @@ def least_square(X, y, w, HProp=None, arg=None, reg=None, act='logistic'):
         arg: output control
         reg: regularizer control
         act: activation function
+        batchsize: the proportion of mini-batch size
     OUTPUT:
         f, gradient, Hessian-vector product/Gauss_Newton_matrix-vector product
     """
@@ -27,6 +29,14 @@ def least_square(X, y, w, HProp=None, arg=None, reg=None, act='logistic'):
         reg_f, reg_g, reg_Hv = reg(w)
         
     n, d = X.shape
+    
+    if batchsize is not None:
+        n_mini = np.int(np.floor(n*batchsize))
+        index_batch = np.random.choice(n, n_mini, replace = False)
+        X = X[index_batch,:]
+        y = y[index_batch]
+        n = n_mini
+        
     X = csr_matrix(X)    
     if act == 'logistic':
         fx, grad, Hess = logistic(X, w)
@@ -92,7 +102,6 @@ def hessvec(XW, X, v):
 
 #@profile
 def main():        
-    rand.seed(1)
     n = 100
     d = 50
     total_C = 2

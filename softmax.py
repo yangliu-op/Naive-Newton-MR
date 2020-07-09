@@ -7,7 +7,7 @@ from scipy.linalg import block_diag
 from regularizer import regConvex, regNonconvex
 
 
-def softmax(X, Y, w, HProp = None, arg=None, reg=None):  
+def softmax(X, Y, w, HProp = None, arg=None, reg=None, batchsize=None):  
     """
     All vectors are column vectors.
     INPUTS:
@@ -17,6 +17,7 @@ def softmax(X, Y, w, HProp = None, arg=None, reg=None):
         HProp: porposion of Hessian perturbation
         arg: output control
         reg: a function handle of regulizer function that returns f,g,Hv
+        batchsize: the proportion of mini-batch size
     OUTPUTS:
         f: objective function value
         g: gradient of objective function
@@ -31,6 +32,15 @@ def softmax(X, Y, w, HProp = None, arg=None, reg=None):
         reg_f, reg_g, reg_Hv = reg(w)
     global d, C
     n, d = X.shape
+    
+    if batchsize is not None:
+        n_mini = np.int(np.floor(n*batchsize))
+        index_batch = np.random.choice(n, n_mini, replace = False)
+#        print(index_batch[:5])
+        X = X[index_batch,:]
+        Y = Y[index_batch]
+        n = n_mini
+        
     C = int(len(w)/d)
     w = w.reshape(d*C,1) #[d*C x 1]
     W = w.reshape(C,d).T #[d x C]
@@ -61,7 +71,7 @@ def softmax(X, Y, w, HProp = None, arg=None, reg=None):
         return f, g
 
     if HProp == None:
-        Hv = lambda v: hessvec(X, S, n, v) + reg_Hv(v) #write in one function to ensure no array inputs        
+        Hv = lambda v: hessvec(X, S, n, v) + reg_Hv(v)   
         return f, g, Hv
     else:
         n_H = np.int(np.floor(n*HProp))

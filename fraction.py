@@ -1,5 +1,5 @@
 import numpy as np
-from numpy.linalg import svd
+from numpy.linalg import svd, norm
 from numpy.random import randn
 from derivativetest import derivativetest
 
@@ -9,7 +9,9 @@ def fraction(x, HProp = None, arg = None, a=100, b=1):
         F(x, y): a*x^2/(b - y)
     INPUT:
         x: variable
-        HProp: porposion of Hessian perturbation
+        HProp: 
+            If arg == 'Hv': porposion of Hessian perturbation
+            If arg == None: ||E|| = HProp*smallest_singular_value_of_H
         arg: output control
     OUTPUT:
         f, gradient, Hessian/perturbed Hessian
@@ -50,6 +52,7 @@ def fraction(x, HProp = None, arg = None, a=100, b=1):
             return f, g, H
         else:
             s = svd(H)[1]
+#            print('H', H)
             # Stability Analysis of Newton-MR Under Hessian Perturbations
             # Condition 1, \epsilon < \gamma/4 (2\nu -1)
             eps = 1E-12 # ignore small epsilon
@@ -57,7 +60,13 @@ def fraction(x, HProp = None, arg = None, a=100, b=1):
             if len(sigma) == 0:
                 raise ValueError('0 rank Hessian!')
             epsilon = min(sigma)
-            E = np.eye(2)*epsilon*HProp # \vnorm{\EE} = \epsllon*HProp
+#            EE = np.eye(2)*epsilon*HProp # \vnorm{\EE} = \epsllon*HProp
+#            print('EE', svd(EE)[1], EE)
+            W = np.random.randn(2,2)
+            W = W + W.T
+            U, s2, V = svd(W)
+            s3 = s2/max(s2)*epsilon*HProp # \vnorm{\EE} = \epsllon*HProp
+            E = U.dot(np.diag(s3).dot(U.T))
             return f, g, H+E
      
     

@@ -5,7 +5,7 @@ from derivativetest import derivativetest
 from regularizer import regConvex, regNonconvex
 from logistic import logit_rho, logit
 
-def GMM(X, C1, C2, theta, HProp = None, arg=None, reg=None):
+def GMM(X, C1, C2, theta, HProp= None, arg=None, reg=None, batchsize=None):
     '''
     Gaussian mixture model is a mixture of two Gaussian distribution here.
     F(x0, x1, x2) = sum log[*e^(-(ai - x1)^2/Sigma1/2) + 
@@ -18,6 +18,7 @@ def GMM(X, C1, C2, theta, HProp = None, arg=None, reg=None):
         arg: output control
         reg: regulizer control
         HProp: porposion of Hessian perturbation
+        batchsize: the proportion of mini-batch size
     OUTPUT:
         f, gradient, Hessian-vector product/Gauss_Newton_matrix-vector product
     '''
@@ -27,8 +28,13 @@ def GMM(X, C1, C2, theta, HProp = None, arg=None, reg=None):
         reg_Hv = lambda v: 0
     else:
         reg_f, reg_g, reg_Hv = reg(theta)
-        
     n, d = X.shape
+    
+    if batchsize is not None:
+        n_mini = np.int(np.floor(n*batchsize))
+        index_batch = np.random.choice(n, n_mini, replace = False)
+        X = X[index_batch,:]
+        n = n_mini
     rho, rhog, rhoH = logit(theta[0])
     
     W = np.vsplit(theta[1:].reshape(len(theta)-1,1), 2)
@@ -61,7 +67,7 @@ def GMM(X, C1, C2, theta, HProp = None, arg=None, reg=None):
     G = np.append(G0, np.append(G1, G2,axis=1), axis=1) #n*(2d+1)
     grad = -(sum(G)/n).reshape(2*d+1,1) + reg_g #n*(2d+1)
     
-    if arg == 'g':
+    if arg == 'g': 
         return grad
     
     if arg == 'fg':
@@ -149,7 +155,6 @@ def gmmtest(x, u):
     
 
 def main():    
-#    np.random.seed(4)
     n=100
     d = 200
     t1 = randn(d,1)+1 #mu

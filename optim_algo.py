@@ -450,8 +450,9 @@ def MomentumSGD(obj, x0, obj_mini_g, batchsize, mainLoopMaxItrs, funcEvalMax,
             break 
 
         t0 = time()   
+        
         if obj_mini_g != None:
-            gk_mini = obj_mini_g(x)
+            gk_mini = obj_mini_g(x, batchsize)
         else:
             gk_mini = gk
             
@@ -533,7 +534,7 @@ def Adagrad(obj, x0, obj_mini_g, batchsize, mainLoopMaxItrs, funcEvalMax,
 
         t0 = time()   
         if obj_mini_g != None:
-            gk_mini = obj_mini_g(x)
+            gk_mini = obj_mini_g(x, batchsize)
         else:
             gk_mini = gk   
             
@@ -600,7 +601,7 @@ def Adadelta(obj, x0, obj_mini_g, batchsize, mainLoopMaxItrs, funcEvalMax,
     tmi = 0
     tm = tmi  
     gamma1 = 0.9
-    gamma2 = 0.9
+    gamma2 = 0.99
         
     if theta is not None:
         gmm_norm = gmmtest(x, theta)
@@ -616,7 +617,7 @@ def Adadelta(obj, x0, obj_mini_g, batchsize, mainLoopMaxItrs, funcEvalMax,
 
         t0 = time()   
         if obj_mini_g != None:
-            gk_mini = obj_mini_g(x)
+            gk_mini = obj_mini_g(x, batchsize)
         else:
             gk_mini = gk   
                 
@@ -701,7 +702,7 @@ def RMSprop(obj, x0, obj_mini_g, batchsize, mainLoopMaxItrs, funcEvalMax,
 
         t0 = time()   
         if obj_mini_g != None:
-            gk_mini = obj_mini_g(x)
+            gk_mini = obj_mini_g(x, batchsize)
         else:
             gk_mini = gk   
                 
@@ -782,7 +783,7 @@ def Adam(obj, x0, obj_mini_g, batchsize, mainLoopMaxItrs, funcEvalMax,
 
         t0 = time()   
         if obj_mini_g != None:
-            gk_mini = obj_mini_g(x)
+            gk_mini = obj_mini_g(x, batchsize)
         else:
             gk_mini = gk   
                        
@@ -868,7 +869,7 @@ def SGD(obj, x0, obj_mini_g, batchsize, mainLoopMaxItrs, funcEvalMax,
 
         t0 = time()   
         if obj_mini_g != None:
-            gk_mini = obj_mini_g(x)
+            gk_mini = obj_mini_g(x, batchsize)
         else:
             gk_mini = gk   
             

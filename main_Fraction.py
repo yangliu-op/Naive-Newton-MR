@@ -36,7 +36,7 @@ x0Type = [
         ]
 
 #initialize parameters
-algPara.mainLoopMaxItrs = 15 #Set mainloop stops with Maximum Iterations
+algPara.mainLoopMaxItrs = 9 #Set mainloop stops with Maximum Iterations
 algPara.funcEvalMax = 1E5 #Set mainloop stops with Maximum Function Evaluations
 algPara.innerSolverMaxItrs = 200 
 algPara.lineSearchMaxItrs = 50

@@ -55,7 +55,6 @@ def initialize(data, methods, prob, regType, x0Type, HProp_all, batchsize,
     print('gradTol = %8s' % algPara.gradTol, end='  ')
     print('innerSolverTol= %8s' % algPara.innerSolverTol, end='  ')
     print('Starting point = %8s ' % x0Type)  
-                
     if regType == 'None':
         reg = None
     if regType == 'Convex':
@@ -73,13 +72,15 @@ def initialize(data, methods, prob, regType, x0Type, HProp_all, batchsize,
         execute_fraction(x0Type, algPara, HProp_all, mypath, fullHessian, 
                          plotAll)
     else:
-        if total_run != 1:
+        if total_run != 1:            
             execute_pProfile(data, methods, x0Type, algPara, learningRate, 
                              HProp_all, batchsize, reg, mypath, fullHessian, 
                              total_run)
         else:
-            execute(data, methods, x0Type, algPara, learningRate, HProp_all, 
-                         batchsize, reg, mypath, fullHessian, prob, plotAll)
+            methods_all, record_all = execute(data, methods, x0Type, algPara, 
+                                              learningRate, HProp_all, 
+                                              batchsize, reg, mypath, 
+                                              fullHessian, prob, plotAll)
             
 
 def execute_fraction(x0Type, algPara, HProp_all, mypath, fullHessian, plotAll):
@@ -114,41 +115,35 @@ def execute(data, methods, x0Type, algPara, learningRate, HProp_all,
         
 #    train_X = scale_train_X(train_X, standarlize=False, normalize=False) 
     
-    index_batch = np.random.choice(np.size(train_X,0), int(
-            batchsize*(train_X.shape[0])), replace = False)
-    
     if prob == 'gmm':
         obj = lambda x, control=None, HProp=None: GMM(
                 train_X, C1, C2, x, HProp, control, reg)
-        mini_batch_X = train_X[index_batch,:] 
-        obj_mini_g = lambda x: GMM(
-                    mini_batch_X, C1, C2, x, arg='g', reg=reg)
+        obj_mini_g = lambda x, bs: GMM(train_X, C1, C2, x, arg='g', 
+                                            reg=reg, batchsize=bs)
     
     if prob == 'softmax':      
         X, Y, l = sofmax_init(train_X, train_Y)    
         obj = lambda x, control=None, HProp=None: softmax(
                 X, Y, x, HProp, control, reg)  
-        mini_batch_X = X[index_batch,:]      
-        mini_batch_Y = Y[index_batch]
-        obj_mini_g = lambda x: softmax(
-                mini_batch_X, mini_batch_Y, x, arg='g', reg=reg)
+        obj_mini_g = lambda x, bs: softmax(
+                X, Y, x, arg='g', reg=reg, batchsize=bs)
         
     if prob == 'nls':
         X, Y, l = nls_init(train_X, train_Y, idx=5)
         obj = lambda x, control=None, HProp=None: least_square(
                 X, Y, x, HProp, control, reg)
-        mini_batch_X = X[index_batch,:] 
-        mini_batch_Y = train_Y[index_batch]
-        obj_mini_g = lambda x: least_square(mini_batch_X, mini_batch_Y, x, 
-                                            arg='g', reg=reg)
+        obj_mini_g = lambda x, bs: least_square(X, Y, x, arg='g', reg=reg, 
+                                                batchsize=bs)
                       
-    x0 = generate_x0(x0Type, l, zoom=100)     
+    x0 = generate_x0(x0Type, l, zoom=100) 
         
     methods_all, record_all = run_algorithms(
             obj, x0, methods, algPara, learningRate, HProp_all, 
             batchsize, obj_mini_g, theta, mypath, fullHessian)
     
     showFigure(methods_all, record_all, prob, mypath, plotAll)
+    
+    return methods_all, record_all
 
   
 def execute_pProfile(data, methods, x0Type, algPara, learningRate, HProp_all, 
@@ -166,17 +161,11 @@ def execute_pProfile(data, methods, x0Type, algPara, learningRate, HProp_all,
         print('The %8g th Total Run' % (j+1))  
         train_X, theta, l, C1, C2 = loaddata_synthetic()   
         
-#        train_X = scale_train_X(train_X)
-        
-        index_batch = np.random.choice(np.size(train_X,0), int(
-                batchsize*(train_X.shape[0])), replace = False)
-        mini_batch_X = train_X[index_batch,:]
         
         obj = lambda x, control=None, HProp=None: GMM(
                 train_X, C1, C2, x, HProp, control, reg)
-        
-        obj_mini_g = lambda x: GMM(
-                mini_batch_X, C1, C2, x, arg='g', reg=reg)     
+        obj_mini_g = lambda x, bs: GMM(train_X, C1, C2, x, arg='g', 
+                                            reg=reg, batchsize=bs)
         
         x0 = generate_x0(x0Type, l)  
              
@@ -207,7 +196,7 @@ def execute_pProfile(data, methods, x0Type, algPara, learningRate, HProp_all,
         else:
             pProfile_f = np.append(pProfile_f, pProfile_fi, axis=0)
             pProfile_g = np.append(pProfile_g, pProfile_gi, axis=0)
-            pProfile_err = np.append(pProfile_err, pProfile_erri, axis=0)        
+            pProfile_err = np.append(pProfile_err, pProfile_erri, axis=0)    
     
     figsz = (6,4)
     mydpi = 200      
@@ -217,15 +206,15 @@ def execute_pProfile(data, methods, x0Type, algPara, learningRate, HProp_all,
        os.makedirs(mypath_pProfile)
     
     fig1 = plt.figure(figsize=figsz)    
-    pProfile(methods_all, pProfile_f, ylabel='F')
+    pProfile(methods_all, pProfile_f)
     fig1.savefig(os.path.join(mypath_pProfile, 'objVal'), dpi=mydpi)
     
     fig2 = plt.figure(figsize=figsz)    
-    pProfile(methods_all, pProfile_g, ylabel='GradientNorm')
+    pProfile(methods_all, pProfile_g)
     fig2.savefig(os.path.join(mypath_pProfile, 'gradNorm'), dpi=mydpi)
     
     fig3 = plt.figure(figsize=figsz)    
-    pProfile(methods_all, pProfile_err, ylabel='Err')
+    pProfile(methods_all, pProfile_err)
     fig3.savefig(os.path.join(mypath_pProfile, 'err'), dpi=mydpi)
     
     with open(os.path.join(mypath_pProfile, 'methods.txt'), 'w') as myfile:
@@ -241,7 +230,7 @@ def run_algorithms(obj, x0, methods, algPara, learningRate, HProp_all,
     """
     Distribute all problems to its cooresponding optimisation methods.
     """
-    record_all = []                
+    record_all = []    
     if 'Newton_MR' in methods:  
         print(' ')
         if fullHessian:
@@ -469,14 +458,14 @@ def loaddata_synthetic(cond=4, n=1000, d=100):
         C1: Root of covariance matrix of 1st Gaussian distribution
         C2: Root of covariance matrix of 2nd Gaussian distribution
     """
-    #Condition number control 10^(2*cond)
+    #Condition number control 10^(2*cond)  
     t1 = randn(d,1)-1 #mu
     t2 = rand(d,1)+3 #mu
     W1 = randn(d,d)
     W2 = rand(d,d)
     U1, _, V1 = svd(W1, full_matrices=True)
     U2, _, V2 = svd(W2, full_matrices=True)
-    s = np.diag(np.logspace(4, 0, d))
+    s = np.diag(np.logspace(cond, 0, d))
     C1 = U1.dot(s.dot(V1.T))
     C2 = U2.dot(s.dot(V2.T))
     var1 = inv(C1.T.dot(C1))#sigma
